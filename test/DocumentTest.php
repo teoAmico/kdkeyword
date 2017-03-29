@@ -5,8 +5,10 @@ namespace PhpPackage;
 class DocumentTest extends \PHPUnit_Framework_TestCase
 {
 
-    public function testTrueIsTrue()
+    public function testInheritance()
     {
-        $this->assertTrue(true);
+        $document = new Document();
+        
+        $this->assertInstanceOf("\PhpPackage\Node", $document);
     }
 }
