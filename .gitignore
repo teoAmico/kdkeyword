@@ -1,3 +1,5 @@
 /vendor/
 /nbproject/private/
 nbproject/
+.env
+.idea
