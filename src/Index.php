@@ -20,13 +20,25 @@ if (in_array('-h', $argv) || in_array('--help', $argv)) {
 }
 
 if (in_array('--search', $argv)) {
-    $optionFrom  = getopt("f::");
+    $optionFrom = getopt("f::");
     $from = !empty($optionFrom['f']) ? $optionFrom['f'] : null;
-    $optionTo  = getopt("t::");
+    $optionTo = getopt("t::");
     $to = !empty($optionTo['t']) ? $optionTo['t'] : null;
 
     $amazonApi = new AmazonAPI($pdo);
-    $amazonApi->search($from, $to);
+
+    $params = array(
+        "Service" => "AWSECommerceService",
+        "Operation" => "ItemSearch",
+        "AWSAccessKeyId" => getenv('AWS_ACCESSKEY_ID'),
+        "AssociateTag" => getenv('AWS_ASSOCIATE_TAG'),
+        "SearchIndex" => "KindleStore",
+        "ResponseGroup" => "BrowseNodes,EditorialReview,Images,ItemAttributes,SalesRank",
+        "Sort" => "salesrank",
+        "BrowseNode" => "157325011"
+    );
+
+    $amazonApi->search($params, $from, $to);
     $execute = true;
     exit;
 }
