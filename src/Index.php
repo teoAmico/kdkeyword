@@ -33,7 +33,7 @@ if (in_array('--search', $argv)) {
         "AWSAccessKeyId" => getenv('AWS_ACCESSKEY_ID'),
         "AssociateTag" => getenv('AWS_ASSOCIATE_TAG'),
         "SearchIndex" => "KindleStore",
-        "ResponseGroup" => "BrowseNodes,EditorialReview,Images,ItemAttributes,SalesRank",
+        "ResponseGroup" => "BrowseNodes,EditorialReview,ItemAttributes,Similarities,SalesRank",
         "Sort" => "salesrank",
         "BrowseNode" => "157325011"
     );
