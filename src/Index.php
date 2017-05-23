@@ -13,6 +13,14 @@ $pdo = Database::getInstance();
 
 
 $execute = false;
+echo PHP_EOL;
+echo "  _  __   _ _  __                                _      ".PHP_EOL;
+echo " | |/ /__| | |/ /___ _   ___      _____  _ __ __| |___  ".PHP_EOL;
+echo " | ' // _` | ' // _ \ | | \ \ /\ / / _ \| '__/ _` / __| ".PHP_EOL;
+echo " | . \ (_| | . \  __/ |_| |\ V  V / (_) | | | (_| \__ \ ".PHP_EOL;
+echo " |_|\_\__,_|_|\_\___|\__, | \_/\_/ \___/|_|  \__,_|___/ ".PHP_EOL;
+echo "                     |___/                              ".PHP_EOL;
+echo PHP_EOL;
 
 if (in_array('-h', $argv) || in_array('--help', $argv)) {
     echoHelp();
@@ -51,12 +59,6 @@ if (!$execute) {
 
 function echoHelp()
 {
-    echo "\n ****************************************************************************";
-    echo "\n *    _      _      _             KDKeywords             _      _      _    *";
-    echo "\n * __(.)< __(.)> __(.)=               #                >(.)__ <(.)__ =(.)__ *";
-    echo "\n * \___)  \___)  \___)              V 1.0               (___/  (___/  (___/ *";
-    echo "\n ****************************************************************************";
-    echo "\n\n";
     echo PHP_EOL . ' Usage: ' . basename(__FILE__) . ' [-h] for help';
     echo PHP_EOL;
     echo PHP_EOL . '';
