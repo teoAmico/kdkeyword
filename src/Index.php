@@ -4,9 +4,9 @@ require_once('../vendor/autoload.php');
 
 use \KDKeywords\Database;
 use \Dotenv\Dotenv;
+use \GuzzleHttp\Cleint;
 use \KDKeywords\AmazonAPI;
 
-//load .env file
 $dotenv = new Dotenv(dirname(dirname(__FILE__)));
 $dotenv->load();
 $pdo = Database::getInstance();
@@ -61,18 +61,15 @@ if ($climate->arguments->defined('search')) {
 
     $from = $climate->arguments->defined('from') ? $climate->arguments->get('from') : null;
     $to =  $climate->arguments->defined('to') ? $climate->arguments->get('to') : null;
-
-    $amazonApi = new AmazonAPI($pdo);
+    $client = new GuzzleHttp\Client();
+    $amazonApi = new AmazonAPI($pdo,$client);
 
     $params = array(
-        "Service" => "AWSECommerceService",
-        "Operation" => "ItemSearch",
-        "AWSAccessKeyId" => getenv('AWS_ACCESSKEY_ID'),
-        "AssociateTag" => getenv('AWS_ASSOCIATE_TAG'),
+        "BrowseNode" => "157325011",
         "SearchIndex" => "KindleStore",
         "ResponseGroup" => "BrowseNodes,EditorialReview,ItemAttributes,Similarities,SalesRank",
         "Sort" => "salesrank",
-        "BrowseNode" => "157325011"
+        'EndPoint'=>"webservices.amazon.com"
     );
 
     $amazonApi->search($params, $from, $to);

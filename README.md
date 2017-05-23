@@ -1,10 +1,4 @@
-cd src/
 
+How to run KDKeywords CLI
 
-see help:
-php index.php -h [or --help]
-
-run api search:
-php index.php --search [-f=123] [-t=345]
-
-[...] options
+php src/index.php 
