@@ -1,6 +1,7 @@
 <?php namespace KDKeywords;
 
 use \PDO;
+use \League\CLImate\CLImate;
 
 class Database
 {
@@ -13,11 +14,11 @@ class Database
     /*
      * Create and return only one instance of this class
      */    
-    public static function getInstance()
+    public static function getInstance(CLImate $terminal)
     {
         if(empty(Database::$pdo)){
             $db = new Database();
-            Database::$pdo = $db->connect();
+            Database::$pdo = $db->connect($terminal);
         }
         return Database::$pdo;
     }
@@ -28,7 +29,7 @@ class Database
         ;
     }
     
-    private function connect(){
+    private function connect($terminal){
         try{
             $host = getenv('DB_HOST');
             $db   = getenv('DB_NAME');
@@ -44,8 +45,8 @@ class Database
             ];
             return new \PDO($dsn, $user, $pass, $opt);
         }catch(\Exception $e){
-            var_dump($e->getMessage());
-            die;  
+            $terminal->White()->backgroundRed($e->getMessage());
+            exit();
         }
         return null;
     }

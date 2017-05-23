@@ -3,6 +3,7 @@
 namespace KDKeywords;
 
 use \PDO;
+use \SimpleXMLElement;
 use \GuzzleHttp\Client;
 use \League\CLImate\CLImate;
 
@@ -28,9 +29,24 @@ class AmazonAPI
 
     public function search($params = [], $from = null, $to = null)
     {
+        //TODO Pagination loop
         $request_url = $this->getSignedRequestURL($params);
 
+        try {
 
+            $response = $this->client->request(
+                'GET', $request_url['base_url'],
+                ['query' => $request_url['query']]
+            );
+            //TODO store response and request in db
+            $contents = new SimpleXMLElement($response->getBody()->getContents());
+            echo "<pre>";
+            print_r($contents);
+            echo "</pre>";
+        } catch(\Exception $e) {
+            $this->terminal->White()->backgroundRed($e->getMessage());
+            exit();
+        }
 
     }
 
@@ -73,7 +89,9 @@ class AmazonAPI
         $signature = base64_encode(hash_hmac("sha256", $string_to_sign, $this->AWSSecretKeyId, true));
 
         // Generate the signed URL
-        $request_url = 'http://' . $endpoint . $uri . '?' . $canonical_query_string . '&Signature=' . rawurlencode($signature);
+        $request_url = [];
+        $request_url['base_url'] = 'http://' . $endpoint . $uri;
+        $request_url['query'] = $canonical_query_string . '&Signature=' . rawurlencode($signature);
 
         return $request_url;
     }

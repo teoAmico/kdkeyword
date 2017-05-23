@@ -8,12 +8,17 @@ use \GuzzleHttp\Cleint;
 use \KDKeywords\AmazonAPI;
 use \League\CLImate\CLImate;
 
+//load global variable
 $dotenv = new Dotenv(dirname(dirname(__FILE__)));
 $dotenv->load();
-$pdo = Database::getInstance();
+//create terminal instance
 $terminal = new CLImate();
 $terminal->addArt(__DIR__);
+// draw nice logo in terminal
 $terminal->draw('logo');
+// create pdo instance
+$pdo = Database::getInstance($terminal);
+//create terminal option configuration
 $terminal->arguments->add([
     'help' => [
         'prefix' => 'h',
