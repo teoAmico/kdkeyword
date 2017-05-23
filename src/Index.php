@@ -10,28 +10,57 @@ use \KDKeywords\AmazonAPI;
 $dotenv = new Dotenv(dirname(dirname(__FILE__)));
 $dotenv->load();
 $pdo = Database::getInstance();
+$climate = new League\CLImate\CLImate;
+$climate->addArt(__DIR__);
+$climate->draw('logo');
+$climate->arguments->add([
+    'help' => [
+        'prefix' => 'h',
+        'longPrefix' => 'help',
+        'description' => 'Show usage menu',
+        'required' => false,
+        'noValue' => true,
 
+    ],
+    'search' => [
+        'prefix' => 's',
+        'longPrefix' => 'search',
+        'description' => 'Run Amazon Product API itemSearch',
+        'noValue' => true,
+        'required' => true,
+    ],
+    'from' => [
+        'prefix' => 'f',
+        'longPrefix' => 'from',
+        'description' => 'Number of the page to start the itemSearch',
+        'castTo' => 'int',
+        'required' => false,
+    ],
+    'to' => [
+        'prefix' => 't',
+        'longPrefix' => 'to',
+        'description' => 'Number of the page to end the itemSearch',
+        'castTo' => 'int',
+        'required' => false,
+    ]
+]);
 
-$execute = false;
-echo PHP_EOL;
-echo "  _  __   _ _  __                                _      ".PHP_EOL;
-echo " | |/ /__| | |/ /___ _   ___      _____  _ __ __| |___  ".PHP_EOL;
-echo " | ' // _` | ' // _ \ | | \ \ /\ / / _ \| '__/ _` / __| ".PHP_EOL;
-echo " | . \ (_| | . \  __/ |_| |\ V  V / (_) | | | (_| \__ \ ".PHP_EOL;
-echo " |_|\_\__,_|_|\_\___|\__, | \_/\_/ \___/|_|  \__,_|___/ ".PHP_EOL;
-echo "                     |___/                              ".PHP_EOL;
-echo PHP_EOL;
-
-if (in_array('-h', $argv) || in_array('--help', $argv)) {
-    echoHelp();
+try {
+    $climate->arguments->parse();
+} catch (\Exception $e) {
+    $climate->usage();
     exit;
 }
 
-if (in_array('--search', $argv)) {
-    $optionFrom = getopt("f::");
-    $from = !empty($optionFrom['f']) ? $optionFrom['f'] : null;
-    $optionTo = getopt("t::");
-    $to = !empty($optionTo['t']) ? $optionTo['t'] : null;
+if ($climate->arguments->defined('help')) {
+    $climate->usage();
+    exit;
+}
+
+if ($climate->arguments->defined('search')) {
+
+    $from = $climate->arguments->defined('from') ? $climate->arguments->get('from') : null;
+    $to =  $climate->arguments->defined('to') ? $climate->arguments->get('to') : null;
 
     $amazonApi = new AmazonAPI($pdo);
 
@@ -47,26 +76,8 @@ if (in_array('--search', $argv)) {
     );
 
     $amazonApi->search($params, $from, $to);
-    $execute = true;
-    exit;
-}
-
-if (!$execute) {
-    echoHelp();
     exit;
 }
 
 
-function echoHelp()
-{
-    echo PHP_EOL . ' Usage: ' . basename(__FILE__) . ' [-h] for help';
-    echo PHP_EOL;
-    echo PHP_EOL . '';
-    echo PHP_EOL;
-    echo PHP_EOL . ' Options:';
-    echo PHP_EOL;
-    echo PHP_EOL . '  --search  [-f=] [-t=]        Run Amazon Product API itemSearch';
-    echo PHP_EOL;
-    echo PHP_EOL;
-    echo PHP_EOL;
-}
+
