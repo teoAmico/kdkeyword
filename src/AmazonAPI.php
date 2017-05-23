@@ -4,18 +4,21 @@ namespace KDKeywords;
 
 use \PDO;
 use \GuzzleHttp\Client;
+use \League\CLImate\CLImate;
 
 class AmazonAPI
 {
-
+    protected $terminal;
     protected $pdo;
     protected $client;
     protected $AWSAccessKeyId;
     protected $AWSSecretKeyId;
     protected $AssociateTag;
 
-    public function __construct(PDO $pdo, Client $client)
+
+    public function __construct(CLImate $terminal,PDO $pdo, Client $client)
     {
+        $this->terminal = $terminal;
         $this->pdo = $pdo;
         $this->client = $client;
         $this->AWSAccessKeyId = getenv('AWS_ACCESSKEY_ID');
@@ -28,7 +31,7 @@ class AmazonAPI
         $request_url = $this->getSignedRequestURL($params);
 
 
-        
+
     }
 
     private function getSignedRequestURL($params)

@@ -6,14 +6,15 @@ use \KDKeywords\Database;
 use \Dotenv\Dotenv;
 use \GuzzleHttp\Cleint;
 use \KDKeywords\AmazonAPI;
+use \League\CLImate\CLImate;
 
 $dotenv = new Dotenv(dirname(dirname(__FILE__)));
 $dotenv->load();
 $pdo = Database::getInstance();
-$climate = new League\CLImate\CLImate;
-$climate->addArt(__DIR__);
-$climate->draw('logo');
-$climate->arguments->add([
+$terminal = new CLImate();
+$terminal->addArt(__DIR__);
+$terminal->draw('logo');
+$terminal->arguments->add([
     'help' => [
         'prefix' => 'h',
         'longPrefix' => 'help',
@@ -46,23 +47,23 @@ $climate->arguments->add([
 ]);
 
 try {
-    $climate->arguments->parse();
+    $terminal->arguments->parse();
 } catch (\Exception $e) {
-    $climate->usage();
+    $terminal->usage();
     exit;
 }
 
-if ($climate->arguments->defined('help')) {
-    $climate->usage();
+if ($terminal->arguments->defined('help')) {
+    $terminal->usage();
     exit;
 }
 
-if ($climate->arguments->defined('search')) {
+if ($terminal->arguments->defined('search')) {
 
-    $from = $climate->arguments->defined('from') ? $climate->arguments->get('from') : null;
-    $to =  $climate->arguments->defined('to') ? $climate->arguments->get('to') : null;
+    $from = $terminal->arguments->defined('from') ? $terminal->arguments->get('from') : null;
+    $to =  $terminal->arguments->defined('to') ? $terminal->arguments->get('to') : null;
     $client = new GuzzleHttp\Client();
-    $amazonApi = new AmazonAPI($pdo,$client);
+    $amazonApi = new AmazonAPI($terminal,$pdo,$client);
 
     $params = array(
         "BrowseNode" => "157325011",
