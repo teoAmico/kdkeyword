@@ -43,7 +43,7 @@ class AmazonAPI
 
                 $contents = new SimpleXMLElement($xml);
                 $totalPage = (int) $contents->Items->TotalPages;
-                $this->terminal->out("Slip: 0 sec - Page: 1/{$totalPage} - Author: {$params['Author']}");
+                $this->terminal->out("Sleep: 0 sec - Page: 1/{$totalPage} - Author: {$params['Author']}");
                 if(empty($totalPage)){
                     continue;
                 }
@@ -59,7 +59,7 @@ class AmazonAPI
                     $params['ItemPage'] = $idxPage;
                     $sequenceRequest = $this->getSignedRequestURL($params);
                     $this->sendRequest($sequenceRequest,$authorId,$idxPage);
-                    $this->terminal->out("Slip: {$sleepSec} sec - Page: {$idxPage}/{$totalPage} - Author: {$params['Author']}");
+                    $this->terminal->out("Sleep: {$sleepSec} sec - Page: {$idxPage}/{$totalPage} - Author: {$params['Author']}");
 
                     $idxPage++;
                 }
