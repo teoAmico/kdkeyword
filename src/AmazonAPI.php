@@ -44,7 +44,9 @@ class AmazonAPI
                 $contents = new SimpleXMLElement($xml);
                 $totalPage = (int) $contents->Items->TotalPages;
                 $this->terminal->out("Slip: 0 sec - Page: 1/{$totalPage} - Author: {$params['Author']}");
-
+                if(empty($totalPage)){
+                    continue;
+                }
                 $idxPage = 2;
                 while($idxPage <= $totalPage){
                     if($idxPage == 11){
