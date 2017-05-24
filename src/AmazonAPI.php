@@ -35,6 +35,7 @@ class AmazonAPI
         foreach ($authors as $key => $author) {
             $params['Author'] = $author['name'];
             $authorId = $author['id'];
+            $params['ItemPage'] = 1;
             $firstRequest = $this->getSignedRequestURL($params);
             try {
 
@@ -42,28 +43,25 @@ class AmazonAPI
 
                 $contents = new SimpleXMLElement($xml);
                 $totalPage = (int) $contents->Items->TotalPages;
-                $this->terminal->out("Slip: 0 - Page: 1 - Author: {$params['Author']}");
+                $this->terminal->out("Slip: 0 sec - Page: 1/{$totalPage} - Author: {$params['Author']}");
+
                 $idxPage = 2;
                 while($idxPage <= $totalPage){
                     if($idxPage == 11){
                         break; //limit over 10 pages
                     }
-                    $slipSec = range(3,5);
+                    $sleepSec = rand(3,5);
                     //wait between 3-5 sec
-                    splip($slipSec);
+                    sleep($sleepSec);
 
-                    $params['itemPage'] = $idxPage;
+                    $params['ItemPage'] = $idxPage;
                     $sequenceRequest = $this->getSignedRequestURL($params);
                     $this->sendRequest($sequenceRequest,$authorId,$idxPage);
-                    $this->terminal->out("Slip: {$slipSec} - Page: {$idxPage}/{$totalPage} - Author: {$params['Author']}");
+                    $this->terminal->out("Slip: {$sleepSec} sec - Page: {$idxPage}/{$totalPage} - Author: {$params['Author']}");
 
                     $idxPage++;
                 }
-
-
-
-                die;
-
+                
 
             } catch (\Exception $e) {
                 $this->terminal->White()->backgroundRed($e->getMessage());
