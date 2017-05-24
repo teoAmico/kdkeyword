@@ -73,7 +73,7 @@ if ($terminal->arguments->defined('search')) {
     $params = array(
         "BrowseNode" => "157325011",
         "SearchIndex" => "KindleStore",
-        "ResponseGroup" => "BrowseNodes,EditorialReview,ItemAttributes,Similarities,SalesRank",
+        "ResponseGroup" => "EditorialReview,ItemAttributes,Similarities,SalesRank",
         "Sort" => "salesrank",
         'EndPoint'=>"webservices.amazon.com"
     );
