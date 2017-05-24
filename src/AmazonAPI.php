@@ -30,7 +30,7 @@ class AmazonAPI
     public function search($params = [], $from = null, $to = null)
     {
 
-        $authors = $this->pdo->query("SELECT * FROM authors WHERE id = 1186");
+        $authors = $this->pdo->query("SELECT * FROM authors");
 
         foreach ($authors as $key => $author) {
             $params['Author'] = $author['name'];
@@ -61,7 +61,7 @@ class AmazonAPI
 
                     $idxPage++;
                 }
-                
+
 
             } catch (\Exception $e) {
                 $this->terminal->White()->backgroundRed($e->getMessage());
