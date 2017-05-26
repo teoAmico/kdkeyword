@@ -30,7 +30,15 @@ class AmazonAPI
     public function search($params = [], $from = null, $to = null)
     {
 
-        $authors = $this->pdo->query("SELECT * FROM authors");
+        $condition = "";
+        if(!empty($from)){
+            $condition .= " WHERE id >= {$from}";
+            if(!empty($to)){
+                $condition .= " AND id <= {$to}";
+            }
+        }
+
+        $authors = $this->pdo->query("SELECT * FROM authors {$condition}");
 
         foreach ($authors as $key => $author) {
             $params['Author'] = $author['name'];
@@ -39,14 +47,15 @@ class AmazonAPI
             $firstRequest = $this->getSignedRequestURL($params);
             try {
 
-                $xml = $this->sendRequest($firstRequest,$authorId,1);
-
-                $contents = new SimpleXMLElement($xml);
-                $totalPage = (int) $contents->Items->TotalPages;
-                $this->terminal->out("Sleep: 0 sec - Page: 1/{$totalPage} - Author: {$params['Author']}");
-                if(empty($totalPage)){
+                $contents = $this->sendRequest($firstRequest,$authorId,1);
+                if(empty($contents)){
+                    $this->terminal->out("ERROR - Sleep: 0 sec - Page: 1/undefined - Author: ({$authorId}) {$params['Author']}");
                     continue;
                 }
+
+                $totalPage =  (int) $contents->Items->TotalPages;
+                $this->terminal->out("Sleep: 0 sec - Page: 1/{$totalPage} - Author: ({$authorId}) {$params['Author']}");
+
                 $idxPage = 2;
                 while($idxPage <= $totalPage){
                     if($idxPage == 11){
@@ -59,7 +68,12 @@ class AmazonAPI
                     $params['ItemPage'] = $idxPage;
                     $sequenceRequest = $this->getSignedRequestURL($params);
                     $this->sendRequest($sequenceRequest,$authorId,$idxPage);
-                    $this->terminal->out("Sleep: {$sleepSec} sec - Page: {$idxPage}/{$totalPage} - Author: {$params['Author']}");
+                    $error  = '';
+                    if(empty($contents)){
+                        $error = 'ERROR - ';
+                    }else{
+                        $this->terminal->out("{$error}Sleep: {$sleepSec} sec - Page: {$idxPage}/{$totalPage} - Author: ({$authorId}) {$params['Author']}");
+                    }
 
                     $idxPage++;
                 }
@@ -124,6 +138,7 @@ class AmazonAPI
     }
 
     private function sendRequest($request,$authorId,$page){
+        $success = 1;
 
         $response = $this->client->request(
             'GET', $request['base_url'],
@@ -131,15 +146,22 @@ class AmazonAPI
         );
 
         $xml = $response->getBody()->getContents();
-
-        $stm = $this->pdo->prepare("INSERT INTO data_feeds (request_url, request_query,response,author_id,page_number) 
-                    VALUES(?,?,?,$authorId, $page)");
+        $contents = new SimpleXMLElement($xml);
+        if($contents->Items->Request->IsValid == 'False'){
+            $success = 0;
+        }
+        $stm = $this->pdo->prepare("INSERT INTO data_feeds (request_url, request_query,response,author_id,page_number,is_success) 
+                    VALUES(?,?,?,$authorId, $page,$success)");
 
         $values = [$request['base_url'],$request['query'], $xml];
 
         $stm->execute($values);
+        if($success){
+            return $contents;
+        }else{
+            return null;
+        }
 
-        return $xml;
     }
 
 }
