@@ -49,7 +49,7 @@ class AmazonAPI
 
                 $contents = $this->sendRequest($firstRequest,$authorId,1);
                 if(empty($contents)){
-                    $this->terminal->out("ERROR - Sleep: 0 sec - Page: 1/undefined - Author: ({$authorId}) {$params['Author']}");
+                    $this->terminal->White()->backgroundRed("ERROR - Sleep: 0 sec - Page: 1/undefined - Author: ({$authorId}) {$params['Author']}");
                     continue;
                 }
 
@@ -68,11 +68,11 @@ class AmazonAPI
                     $params['ItemPage'] = $idxPage;
                     $sequenceRequest = $this->getSignedRequestURL($params);
                     $this->sendRequest($sequenceRequest,$authorId,$idxPage);
-                    $error  = '';
+
                     if(empty($contents)){
-                        $error = 'ERROR - ';
+                        $this->terminal->White()->backgroundRed("ERROR - Sleep: {$sleepSec} sec - Page: {$idxPage}/{$totalPage} - Author: ({$authorId}) {$params['Author']}");
                     }else{
-                        $this->terminal->out("{$error}Sleep: {$sleepSec} sec - Page: {$idxPage}/{$totalPage} - Author: ({$authorId}) {$params['Author']}");
+                        $this->terminal->out("Sleep: {$sleepSec} sec - Page: {$idxPage}/{$totalPage} - Author: ({$authorId}) {$params['Author']}");
                     }
 
                     $idxPage++;
