@@ -100,8 +100,9 @@ CREATE TABLE `data_feeds` (
   `author_id` int(11) DEFAULT NULL,
   `page_number` int(11) DEFAULT NULL,
   `request_url` varchar(250) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `is_success` tinyint(4) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -122,4 +123,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2017-05-24 21:28:28
+-- Dump completed on 2017-05-26 21:16:03
