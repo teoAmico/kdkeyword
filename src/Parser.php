@@ -5,6 +5,7 @@ require_once('../vendor/autoload.php');
 use \KDKeywords\Database;
 use \Dotenv\Dotenv;
 use \League\CLImate\CLImate;
+use \KDKeywords\ImportBooks;
 
 
 //load global variable
@@ -51,7 +52,8 @@ if ($terminal->arguments->defined('help')) {
 }
 
 if ($terminal->arguments->defined('import')) {
-    echo 'TODO parse data'.PHP_EOL;
+    $importer = new ImportBooks($terminal, $pdo);
+    $importer->run();
     exit();
 }
 

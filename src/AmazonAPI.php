@@ -32,14 +32,19 @@ class AmazonAPI
 
         $condition = "";
         if(!empty($from)){
-            $condition .= " WHERE id >= {$from}";
+            $condition .= " AND authors.id >= {$from} ";
             if(!empty($to)){
-                $condition .= " AND id <= {$to}";
+                $condition .= " AND authors.id <= {$to} ";
             }
         }
 
-        $authors = $this->pdo->query("SELECT * FROM authors {$condition}");
-
+        $authors = $this->pdo->query("SELECT authors.* FROM authors 
+             LEFT JOIN data_feeds ON authors.id = data_feeds.author_id 
+             WHERE data_feeds.author_id IS NULL 
+             {$condition}  
+             ORDER BY authors.books_number ASC");
+        $tot = count($authors);
+        $idx = 1;
         foreach ($authors as $key => $author) {
             $params['Author'] = $author['name'];
             $authorId = $author['id'];
@@ -49,30 +54,34 @@ class AmazonAPI
 
                 $contents = $this->sendRequest($firstRequest,$authorId,1);
                 if(empty($contents)){
-                    $this->terminal->White()->backgroundRed("ERROR - Sleep: 0 sec - Page: 1/undefined - Author: ({$authorId}) {$params['Author']}");
+                    $this->terminal->White()->backgroundRed("{$idx}/{$tot} ERROR - Sleep: 0 sec - Page: 1/undefined - Author: ({$authorId}) {$params['Author']}");
+                    $idx++;
                     continue;
                 }
 
                 $totalPage =  (int) $contents->Items->TotalPages;
-                $this->terminal->out("Sleep: 0 sec - Page: 1/{$totalPage} - Author: ({$authorId}) {$params['Author']}");
-
+                $this->terminal->out("{$idx}/{$tot} Sleep: 0 sec - Page: 1/{$totalPage} - Author: ({$authorId}) {$params['Author']}");
+                $sleepSec = rand(5,10);
+                sleep($sleepSec);
                 $idxPage = 2;
                 while($idxPage <= $totalPage){
                     if($idxPage == 11){
                         break; //limit over 10 pages
                     }
-                    $sleepSec = rand(3,5);
-                    //wait between 3-5 sec
-                    sleep($sleepSec);
+                    if($idxPage>2){
+                        $sleepSec = rand(10,15);
+                        sleep($sleepSec);
+                    }
+
 
                     $params['ItemPage'] = $idxPage;
                     $sequenceRequest = $this->getSignedRequestURL($params);
                     $this->sendRequest($sequenceRequest,$authorId,$idxPage);
 
                     if(empty($contents)){
-                        $this->terminal->White()->backgroundRed("ERROR - Sleep: {$sleepSec} sec - Page: {$idxPage}/{$totalPage} - Author: ({$authorId}) {$params['Author']}");
+                        $this->terminal->White()->backgroundRed("{$idx}/{$tot} ERROR - Sleep: {$sleepSec} sec - Page: {$idxPage}/{$totalPage} - Author: ({$authorId}) {$params['Author']}");
                     }else{
-                        $this->terminal->out("Sleep: {$sleepSec} sec - Page: {$idxPage}/{$totalPage} - Author: ({$authorId}) {$params['Author']}");
+                        $this->terminal->out("{$idx}/{$tot} Sleep: {$sleepSec} sec - Page: {$idxPage}/{$totalPage} - Author: ({$authorId}) {$params['Author']}");
                     }
 
                     $idxPage++;
@@ -83,7 +92,7 @@ class AmazonAPI
                 $this->terminal->White()->backgroundRed($e->getMessage());
                 exit();
             }
-
+            $idx++;
 
         }
 
