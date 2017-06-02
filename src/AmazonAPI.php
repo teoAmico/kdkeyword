@@ -61,7 +61,7 @@ class AmazonAPI
 
                 $totalPage =  (int) $contents->Items->TotalPages;
                 $this->terminal->out("{$idx}/{$tot} Sleep: 0 sec - Page: 1/{$totalPage} - Author: ({$authorId}) {$params['Author']}");
-                $sleepSec = rand(5,10);
+                $sleepSec = rand(5,5);
                 sleep($sleepSec);
                 $idxPage = 2;
                 while($idxPage <= $totalPage){
@@ -69,7 +69,7 @@ class AmazonAPI
                         break; //limit over 10 pages
                     }
                     if($idxPage>2){
-                        $sleepSec = rand(10,15);
+                        $sleepSec = rand(5,5);
                         sleep($sleepSec);
                     }
 
