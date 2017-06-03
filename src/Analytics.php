@@ -1,5 +1,5 @@
 <?php
-
+date_default_timezone_set('Europe/London');
 require_once('../vendor/autoload.php');
 
 use \KDKeywords\Database;
@@ -35,13 +35,21 @@ $terminal->arguments->add([
         'longPrefix' => 'extractor',
         'description' => 'Extract keywords from books titles',
         'noValue' => true,
-        'required' => true,
+        'required' => false,
     ],
+    'analysis' => [
+        'prefix' => 'a',
+        'longPrefix' => 'analysis',
+        'description' => 'Analysis keywords from books titles',
+        'noValue' => true,
+        'required' => false,
+    ]
 ]);
 
 try {
     $terminal->arguments->parse();
 } catch (\Exception $e) {
+    var_dump($e->getMessage());
     $terminal->usage();
     exit;
 }
@@ -53,6 +61,12 @@ if ($terminal->arguments->defined('help')) {
 
 if ($terminal->arguments->defined('extractor')) {
     $extractor = new KeywordsExtractor($terminal, $pdo);
-    $extractor->run();
+    $extractor->extract();
+    exit();
+}
+
+if ($terminal->arguments->defined('analysis')) {
+    $extractor = new KeywordsExtractor($terminal, $pdo);
+    $extractor->analysis();
     exit();
 }
