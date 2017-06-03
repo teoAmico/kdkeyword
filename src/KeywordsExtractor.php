@@ -151,13 +151,13 @@ class KeywordsExtractor
             $numAuthors = $numAuthorsStm->fetch(PDO::FETCH_ASSOC)['tot'];
 
             //min keyword score
-            $minScoreStm = $this->pdo->prepare("SELECT min(score) AS score  FROM keywords_scores WHERE keyword LIKE :keyword");
+            $minScoreStm = $this->pdo->prepare("SELECT min(CAST(score AS DECIMAL(12,2))) AS score  FROM keywords_scores WHERE keyword LIKE :keyword");
             $minScoreStm->bindParam(':keyword', $keyword,PDO::PARAM_STR);
             $minScoreStm->execute();
             $minScore = $minScoreStm->fetch(PDO::FETCH_ASSOC)['score'];
 
             //max keyword score
-            $maxScoreStm = $this->pdo->prepare("SELECT max(score) AS score  FROM keywords_scores WHERE keyword LIKE :keyword");
+            $maxScoreStm = $this->pdo->prepare("SELECT max(CAST(score AS DECIMAL(12,2))) AS score  FROM keywords_scores WHERE keyword LIKE :keyword");
             $maxScoreStm->bindParam(':keyword', $keyword,PDO::PARAM_STR);
             $maxScoreStm->execute();
             $maxScore = $maxScoreStm->fetch(PDO::FETCH_ASSOC)['score'];
