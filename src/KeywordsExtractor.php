@@ -106,12 +106,14 @@ class KeywordsExtractor
             $numAuthors = $bookResult['author_freq'];
 
             //how many times it is in title description
-            $descFreqStm = $this->pdo->prepare("SELECT count(id) AS tot  FROM editorial_reviews WHERE content LIKE :keyword AND is_link_suppressed = 0");
-            $descFreqStm->bindParam(':keyword', $keyword, PDO::PARAM_STR);
-            $descFreqStm->execute();
-            $descFreq = $descFreqStm->fetch(PDO::FETCH_ASSOC)['tot'];
+            $descFreq = null;
+//            $descFreqStm = $this->pdo->prepare("SELECT count(id) AS tot  FROM editorial_reviews WHERE content LIKE :keyword AND is_link_suppressed = 0");
+//            $descFreqStm->bindParam(':keyword', $keyword, PDO::PARAM_STR);
+//            $descFreqStm->execute();
+//            $descFreq = $descFreqStm->fetch(PDO::FETCH_ASSOC)['tot'];
 
             //How many times it is in similar titles
+            $simTitleFreq = null;
             $simTitleFreqStm = $this->pdo->prepare("SELECT count(id) AS tot  FROM similar_products WHERE title LIKE :keyword");
             $simTitleFreqStm->bindParam(':keyword', $keyword, PDO::PARAM_STR);
             $simTitleFreqStm->execute();
