@@ -97,10 +97,10 @@ class KeywordsExtractor
             $titleFreq = $bookResult['title_freq'];
             $minSalesRank = $bookResult['min_rank'];
             $maxSalesRank = $bookResult['max_rank'];
-            $minReleaseDate = empty($bookResult['min_rel_date'])? null: $bookResult['min_rel_date'];
-            $maxReleaseDate = empty($bookResult['max_rel_date'])? null : $bookResult['max_rel_date'];
-            $minPublishedDate = empty($bookResult['min_pub_date'])? null: $bookResult['min_pub_date'];
-            $maxPublishedDate = empty($bookResult['max_pub_date'])? null: $bookResult['max_pub_date'];
+            $minReleaseDate = empty($bookResult['min_rel_date']) ? null : $bookResult['min_rel_date'];
+            $maxReleaseDate = empty($bookResult['max_rel_date']) ? null : $bookResult['max_rel_date'];
+            $minPublishedDate = empty($bookResult['min_pub_date']) ? null : $bookResult['min_pub_date'];
+            $maxPublishedDate = empty($bookResult['max_pub_date']) ? null : $bookResult['max_pub_date'];
             $minNumPages = $bookResult['min_page'];
             $maxNumPage = $bookResult['max_page'];
             $numAuthors = $bookResult['author_freq'];
@@ -154,6 +154,43 @@ class KeywordsExtractor
 
             $this->terminal->out("{$idx}: {$key['keyword']}");
             $idx++;
+        }
+
+    }
+
+    public function fixSalesRank()
+    {
+        $keywordRows = $this->pdo->query("SELECT MAX(id) AS maxId FROM keywords_analytics");
+        $idx = 	50;
+        $maxKey = $keywordRows->fetch(PDO::FETCH_ASSOC);
+        while ($idx <= $maxKey['maxId']) {
+            $keyObj = $this->pdo->query("SELECT * FROM keywords_analytics WHERE id = {$idx}");
+            $key = $keyObj->fetch(PDO::FETCH_ASSOC);
+            if (empty($key)) {
+                $idx++;
+                continue;
+            }
+
+            $keyword = '%' . $key['keyword'] . '%';
+
+            $minSalesRankStm = $this->pdo->prepare("SELECT min(CAST(sales_rank AS SIGNED)) AS rank  FROM books WHERE title LIKE :keyword AND sales_rank != ''");
+            $minSalesRankStm->bindParam(':keyword', $keyword,PDO::PARAM_STR);
+            $minSalesRankStm->execute();
+            $minSalesRank = $minSalesRankStm->fetch(PDO::FETCH_ASSOC)['rank'];
+
+            //max sales rank
+            $maxSalesRankStm = $this->pdo->prepare("SELECT max(CAST(sales_rank AS SIGNED)) AS rank  FROM books WHERE title LIKE :keyword AND sales_rank != ''");
+            $maxSalesRankStm->bindParam(':keyword', $keyword,PDO::PARAM_STR);
+            $maxSalesRankStm->execute();
+            $maxSalesRank = $maxSalesRankStm->fetch(PDO::FETCH_ASSOC)['rank'];
+
+            $analysisStm = $this->pdo->prepare("UPDATE keywords_analytics SET min_sales_rank = ?, max_sales_rank = ? WHERE id = '{$idx}'");
+            $analysisStm->execute([$minSalesRank, $maxSalesRank]);
+
+            $this->terminal->out("{$idx}: {$key['keyword']}");
+            $idx++;
+
+
         }
 
     }

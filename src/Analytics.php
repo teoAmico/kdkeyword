@@ -43,7 +43,14 @@ $terminal->arguments->add([
         'description' => 'Analysis keywords from books titles',
         'noValue' => true,
         'required' => false,
-    ]
+    ],
+    'salesrank'=> [
+        'prefix' => 's',
+        'longPrefix' => 'salesrank',
+        'description' => 'Fix Salesrank',
+        'noValue' => true,
+        'required' => false,
+    ],
 ]);
 
 try {
@@ -68,5 +75,11 @@ if ($terminal->arguments->defined('extractor')) {
 if ($terminal->arguments->defined('analysis')) {
     $extractor = new KeywordsExtractor($terminal, $pdo);
     $extractor->analysis();
+    exit();
+}
+
+if ($terminal->arguments->defined('salesrank')) {
+    $extractor = new KeywordsExtractor($terminal, $pdo);
+    $extractor->fixSalesRank();
     exit();
 }
